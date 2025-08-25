@@ -1,16 +1,14 @@
 {
-  "modid": "${ModID}",
+  "modid": "${modID}",
   "name": "${project.name}",
-  "author_list": [
-    "you!"
-  ],
-  "description": "${project.description}",
+  "author_list": ["${author}"],
+  "description": "!(project.description)",
   "version": "${project.version}",
   "sts_version": "${SlayTheSpire.version}",
   "mts_version": "${ModTheSpire.version}",
   "dependencies": [
     "basemod",
     "stslib"
-  ]
+  ],
+  "update_json": ""
 }
-
