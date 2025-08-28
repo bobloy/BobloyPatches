@@ -9,5 +9,13 @@
         <module name="BobloyPatches" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="block-reminder" target="1.8" />
+      <module name="BlockReminder" target="1.8" />
+      <module name="Reliquary" target="1.8" />
+      <module name="ShopMod" target="1.8" />
+      <module name="SpireTogether" target="1.8" />
+      <module name="tisCardPack" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

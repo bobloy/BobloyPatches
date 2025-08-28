@@ -20,7 +20,7 @@
 
     <groupId>${modID}</groupId>
     <artifactId>${modID}</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <name>BobloyPatches</name>
     <description>A testing zone, intended to prepare your mod for liftoff.</description>
     <!-- Change the above for mod information. -->
@@ -62,6 +62,27 @@
             <version>1.0.0</version>
             <scope>system</scope>
             <systemPath>${steam.path}/workshop/content/646570/2805998622/PansTrinkets.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>blockreminder</groupId>
+            <artifactId>block-reminder</artifactId>
+            <version>1.2.0</version>
+            <scope>system</scope>
+            <systemPath>${steam.path}/workshop/content/646570/1974165911/block-reminder.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>tiscardpack</groupId>
+            <artifactId>tisCardPack</artifactId>
+            <version>1.0.5</version>
+            <scope>system</scope>
+            <systemPath>${steam.path}/workshop/content/646570/3148331689/TogetherInSpireBoosterPack.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>spiretogether</groupId>
+            <artifactId>SpireTogether</artifactId>
+            <version>2.0</version>
+            <scope>system</scope>
+            <systemPath>${steam.path}/workshop/content/646570/2384072973/TogetherInSpire.jar</systemPath>
         </dependency>
     </dependencies>
 

@@ -3,14 +3,11 @@ package BobloyPatches.patches;
 import java.lang.System;
 
 import basemod.abstracts.CustomSavable;
-import com.evacipated.cardcrawl.mod.stslib.relics.OnRemoveCardFromMasterDeckRelic;
-import com.evacipated.cardcrawl.modthespire.lib.SpireField;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePostfixPatch;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.cards.CardGroup;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
-import com.megacrit.cardcrawl.relics.AbstractRelic;
 import pansTrinkets.DefaultMod;
 import pansTrinkets.helpers.TrinketHelper;
 
@@ -71,7 +68,7 @@ public class TrinketHelperPatches implements CustomSavable<Float> {
         @SpirePostfixPatch
         public static void changeMaxWeightPatch(float change) {
             System.out.println("TrinketHelperPatchesChangeMaxWeightPatch | Max Weight changed!");
-//            changeModWeight(change);
+            // changeModWeight(change);
             // NOTE: Do not change mod weight for float changes. The only float change is the 0.5 increment from adding cards
 
             if (DefaultMod.enableProgressiveMaxWeight) {
@@ -80,20 +77,6 @@ public class TrinketHelperPatches implements CustomSavable<Float> {
             }
         }
     }
-
-    // Doesn't work. Also unneeded, handled in ChangeMaxWeightPatch
-//    @SpirePatch(
-//            clz = TrinketHelper.class,
-//            method = "onCardObtain"
-//    )
-//    public class OnCardObtainPatch {
-//        public void Object Replace(AbstractCard c) {
-//            System.out.println("TrinketHelperObtainPatch | Card obtained!");
-//            if (DefaultMod.enableProgressiveMaxWeight) {
-//                changeModWeight(0);
-//            }
-//        }
-//    }
 
     @SpirePatch(
             clz = CardGroup.class,
