@@ -1,6 +1,7 @@
 package BobloyPatches.patches;
 
 import com.blanktheevil.blockreminder.BlockPreview;
+import com.evacipated.cardcrawl.modthespire.Loader;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpireReturn;
 import spireTogether.network.P2P.P2PPlayer;
@@ -29,9 +30,12 @@ import spireTogether.network.P2P.P2PPlayer;
 //    }
 //}
 
-@SpirePatch(clz = P2PPlayer.class, method = "addBlock")
+@SpirePatch(clz = P2PPlayer.class, method = "addBlock", requiredModId = "spireTogether")
 public class CryogeneticsPatch{
     public static SpireReturn<Void> Prefix(P2PPlayer __instance, int blockAmount){
+        if (!Loader.isModLoaded("block-reminder")){
+            return SpireReturn.Continue();
+        }
         if(BlockPreview.isPreview){
             return SpireReturn.Return();
         }

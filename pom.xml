@@ -12,10 +12,13 @@
 
         <!--CHANGE THIS TO YOUR STEAM INSTALLATION-->
         <steam.path>C:/Program Files (x86)/Steam/steamapps/</steam.path>
+        <sts.path>/common/SlayTheSpire/desktop-1.0.jar</sts.path>
+        <workshop.path>/workshop/content/646570/</workshop.path>
 
         <author>Bobloy</author>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
     </properties>
 
     <groupId>${modID}</groupId>
@@ -38,51 +41,58 @@
             <artifactId>modthespire</artifactId>
             <version>${ModTheSpire.version}</version>
             <scope>system</scope>
-            <systemPath>${steam.path}/workshop/content/646570/1605060445/ModTheSpire.jar</systemPath>
+            <systemPath>${steam.path}${workshop.path}/1605060445/ModTheSpire.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>basemod</groupId>
             <artifactId>basemod</artifactId>
             <!--Don't worry about these version numbers, they're only used for display
                 in the left sidebar under External Libraries and don't need to be accurate.-->
-            <version>5.44.0</version>
+            <version>5.56.0</version>
             <scope>system</scope>
-            <systemPath>${steam.path}/workshop/content/646570/1605833019/BaseMod.jar</systemPath>
+            <systemPath>${steam.path}${workshop.path}/1605833019/BaseMod.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.evacipated.cardcrawl.mod</groupId>
             <artifactId>StSLib</artifactId>
             <version>2.4.0</version>
             <scope>system</scope>
-            <systemPath>${steam.path}/workshop/content/646570/1609158507/StSLib.jar</systemPath>
+            <systemPath>${steam.path}${workshop.path}/1609158507/StSLib.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>panstrinkets</groupId>
             <artifactId>PansTrinkets</artifactId>
             <version>1.0.0</version>
             <scope>system</scope>
-            <systemPath>${steam.path}/workshop/content/646570/2805998622/PansTrinkets.jar</systemPath>
+            <systemPath>${steam.path}${workshop.path}/2805998622/PansTrinkets.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>blockreminder</groupId>
             <artifactId>block-reminder</artifactId>
             <version>1.2.0</version>
             <scope>system</scope>
-            <systemPath>${steam.path}/workshop/content/646570/1974165911/block-reminder.jar</systemPath>
+            <systemPath>${steam.path}${workshop.path}/1974165911/block-reminder.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>tiscardpack</groupId>
             <artifactId>tisCardPack</artifactId>
             <version>1.0.5</version>
             <scope>system</scope>
-            <systemPath>${steam.path}/workshop/content/646570/3148331689/TogetherInSpireBoosterPack.jar</systemPath>
+            <systemPath>${steam.path}${workshop.path}/3148331689/TogetherInSpireBoosterPack.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>spiretogether</groupId>
             <artifactId>SpireTogether</artifactId>
             <version>2.0</version>
             <scope>system</scope>
-            <systemPath>${steam.path}/workshop/content/646570/2384072973/TogetherInSpire.jar</systemPath>
+            <systemPath>${steam.path}${workshop.path}/2384072973/TogetherInSpire.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>CardAugments</groupId>
+            <artifactId>CardAugments</artifactId>
+            <version>1.0.5</version>
+            <scope>system</scope>
+            <systemPath>${steam.path}/workshop/content/646570/2970981743/CardAugments.jar</systemPath>
         </dependency>
     </dependencies>
 
@@ -215,7 +225,7 @@
             </activation>
             <properties>
 <!--                <steam.path>${steam.windows}</steam.path>-->
-                <sts.path>/common/SlayTheSpire/desktop-1.0.jar</sts.path>
+<!--                <sts.path>/common/SlayTheSpire/desktop-1.0.jar</sts.path>-->
             </properties>
         </profile>
     </profiles>

@@ -2,6 +2,7 @@ package BobloyPatches;
 
 import basemod.BaseMod;
 import basemod.interfaces.*;
+import com.evacipated.cardcrawl.modthespire.Loader;
 import com.evacipated.cardcrawl.modthespire.lib.SpireInitializer;
 import com.megacrit.cardcrawl.cards.CardGroup;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
@@ -42,7 +43,7 @@ public class BobloyPatches implements PostInitializeSubscriber, PostCreateStarti
 
     @Override
     public void receivePostCreateStartingDeck(AbstractPlayer.PlayerClass pc, CardGroup cg){
-        if (DefaultMod.enableProgressiveMaxWeight) {
+        if (Loader.isModLoaded("PansTrinkets") && DefaultMod.enableProgressiveMaxWeight) {
             System.out.println("BobloyPatchesreceivePostCreateStartingDeck | Initial Max Weight set!");
             TrinketHelper.changeMaxWeight(0);
         }
