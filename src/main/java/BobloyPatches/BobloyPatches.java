@@ -1,5 +1,6 @@
 package BobloyPatches;
 
+import BobloyPatches.network.P2PMessageAnalyzer;
 import basemod.BaseMod;
 import basemod.interfaces.*;
 import com.evacipated.cardcrawl.modthespire.Loader;
@@ -9,6 +10,7 @@ import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import pansTrinkets.DefaultMod;
 import pansTrinkets.helpers.TrinketHelper;
+import spireTogether.subscribers.TiSSubscribers;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 @SpireInitializer
@@ -38,7 +40,7 @@ public class BobloyPatches implements PostInitializeSubscriber, PostCreateStarti
 
     @Override
     public void receivePostInitialize() {
-
+        TiSSubscribers.subscribe(new P2PMessageAnalyzer());
     }
 
     @Override
@@ -48,5 +50,6 @@ public class BobloyPatches implements PostInitializeSubscriber, PostCreateStarti
             TrinketHelper.changeMaxWeight(0);
         }
     }
+
 }
 

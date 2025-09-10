@@ -6,16 +6,23 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="ShopMod" />
+        <module name="BaseMod" />
+        <module name="skindex" />
+        <module name="SpireTogether" />
+        <module name="Conspire" />
+        <module name="chimeracardsplus" />
         <module name="BobloyPatches" />
+        <module name="CardAugments" />
+        <module name="tisCardPack" />
+        <module name="TestMod" />
+        <module name="dLib" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="block-reminder" target="1.8" />
       <module name="BlockReminder" target="1.8" />
       <module name="Reliquary" target="1.8" />
-      <module name="ShopMod" target="1.8" />
-      <module name="SpireTogether" target="1.8" />
-      <module name="tisCardPack" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

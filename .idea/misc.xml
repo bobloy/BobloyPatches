@@ -5,6 +5,15 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/../../CardAugments/pom.xml" />
+        <option value="$PROJECT_DIR$/../../Together-in-Spire/theDefault/pom.xml" />
+        <option value="$PROJECT_DIR$/../../ChimeraCardsPlus/pom.xml" />
+        <option value="$PROJECT_DIR$/../../TiS-Official-Item-Pack/theDefault/pom.xml" />
+        <option value="$PROJECT_DIR$/../../sts-shop-mod/pom.xml" />
+        <option value="$PROJECT_DIR$/../../BaseMod/pom.xml" />
+        <option value="$PROJECT_DIR$/../../sts-conspire/pom.xml" />
+        <option value="$PROJECT_DIR$/../../dLib/pom.xml" />
+        <option value="$PROJECT_DIR$/../../Skindex/skindex/pom.xml" />
       </list>
     </option>
   </component>
