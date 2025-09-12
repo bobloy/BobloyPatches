@@ -1,29 +1,23 @@
 package BobloyPatches.patches;
 
 
-import BobloyPatches.BobloyPatches;
 import CardAugments.CardAugmentsMod;
-import CardAugments.cardmods.AbstractAugment;
-import CardAugments.patches.OnCardGeneratedPatches;
 import basemod.abstracts.AbstractCardModifier;
 import basemod.helpers.CardModifierManager;
 import com.evacipated.cardcrawl.modthespire.Loader;
 import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.megacrit.cardcrawl.cards.AbstractCard;
-
-import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
-import com.megacrit.cardcrawl.monsters.AbstractMonster;
-import com.megacrit.cardcrawl.vfx.cardManip.ShowCardBrieflyEffect;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import spireTogether.network.objects.items.NetworkCard;
+import spireTogether.network.P2P.P2PCallbacks;
+import spireTogether.network.P2P.P2PMessageSender;
 import spireTogether.screens.trading.TradingScreen;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
+import static BobloyPatches.network.P2PMessageSender_Bobloy.cardAugmentTradeRequest;
+
 public class ChimeraPatches {
-    static boolean isTrading = false;
+    static int isTrading = 0;
 
     public static void addModifierButDontRunInitial(AbstractCard card, AbstractCardModifier mod) {
         if (mod.shouldApply(card)) {
@@ -36,149 +30,120 @@ public class ChimeraPatches {
 
     }
 
-    @SpirePatch2(clz = OnCardGeneratedPatches.ModifySpawnedCardsPatch.class, method = "patch", requiredModId="CardAugments")
+    @SpirePatch2(clz = CardAugmentsMod.class, method = "rollCardAugment", paramtypez = {AbstractCard.class, int.class}, requiredModId = "CardAugments")
     public static class ModifySpawnedCardsPatch {
         @SpirePrefixPatch
         public static SpireReturn<Void> patch() {
-            if(isTrading){
-                isTrading = false;
+            if (isTrading > 0) {
+                isTrading--;
                 return SpireReturn.Return(null);
             }
             return SpireReturn.Continue();
         }
     }
 
-    @SpirePatch2(clz = TradingScreen.class, method = "Trade", requiredModId="spireTogether")
+    @SpirePatch2(clz = P2PCallbacks.class, method = "OnTradeToModifyReceivingCards", requiredModId = "spireTogether")
     public static class TradePatch {
-        @SpirePrefixPatch
-        public static void patch() {
-            if(!Loader.isModLoaded("CardAugments")){
+        @SpirePostfixPatch
+        public static ArrayList<AbstractCard> patch(ArrayList<AbstractCard> __result) {
+            if (!Loader.isModLoaded("CardAugments") || __result.isEmpty()) {
+                return __result;
+            }
+            isTrading = __result.size();
+            return __result;
+        }
+    }
+
+    // NEW METHOD: ONLY WORKS FOR TRADING
+    @SpirePatch2(clz = P2PMessageSender.class, method = "Send_TradingChangedCards", requiredModId = "spireTogether")
+    public static class Send_TradingChangedCardsPatch {
+        @SpirePostfixPatch
+        public static void patch(Integer playerID) {
+            if (!Loader.isModLoaded("CardAugments")) {
                 return;
             }
-            isTrading = true;
-
+            cardAugmentTradeRequest(TradingScreen.tradingScreen.playerCards, playerID);
         }
     }
 
+    // OLD METHOD: WORKS FOR ALL CARDS INSTEAD OF JUST TRADING, RISKY??
 
-    @SpirePatch2(clz = NetworkCard.class, method = SpirePatch.CLASS, requiredModId = "spireTogether")
-    public static class NetworkCardFields {
-        public static SpireField<ArrayList<String>> cardModifiers = new SpireField<>(ArrayList::new);
-    }
-
-
-    @SpirePatch2(clz = NetworkCard.class, method = "Generate", paramtypez = {AbstractCard.class, AbstractMonster.class}, requiredModId = "spireTogether")
-    public static class GeneratePatch {
-        @SpirePostfixPatch
-        public static NetworkCard patch(AbstractCard c, NetworkCard __result) {
-
-            if (__result == null) {
-                return null;
-            }
-
-            if(Loader.isModLoaded("CardAugments")){
-                ArrayList<String> modifierIDs = new ArrayList<>();
-                for (AbstractCardModifier m : CardModifierManager.modifiers(c)) {
-                    if (m instanceof AbstractAugment) {
-                        modifierIDs.add(m.identifier(c));
-//                        __result.cardModifiers.add(m.identifier(c));
-                    }
-                }
-                NetworkCardFields.cardModifiers.set(__result, modifierIDs);
-            }
-
-            return __result;
-        }
-    }
-
-
-    // TODO: Use the SpireField on NetworkCard to reconstruct the list of modifiers on the AbstractCard.
-    @SpirePatch2(clz = NetworkCard.class, method = "ToStandard", paramtypez = {}, requiredModId = "spireTogether")
-    public static class ToStandardPatch {
-        @SpirePostfixPatch
-        public static AbstractCard patch(NetworkCard __instance, AbstractCard __result) {
-
-            // Guard against null card reconstruction to avoid NPEs during modifier application
-            if (__result == null) {
-                return null;
-            }
-
-            if(Loader.isModLoaded("CardAugments")){
-                ArrayList<String> modifierIDs = NetworkCardFields.cardModifiers.get(__instance);
-                if (modifierIDs == null) {
-                    return __result;
-                }
-                for (String modID : modifierIDs){
-                    if (CardAugmentsMod.modMap.containsKey(modID)) {
-                        AbstractAugment a = CardAugmentsMod.modMap.get(modID);
-                        if (a != null && a.canApplyTo(__result)) {
-                            addModifierButDontRunInitial(__result, a);
-                        }
-                    }
-                }
-            }
-
-            return __result;
-        }
-    }
-
-////        public static ExprEditor Instrument () {
-////            return new ExprEditor() {
-////                int ficp = 0;
-////                @Override
-////                public void edit(MethodCall m) throws CannotCompileException {
-////                    try {
-////                        if(m.getMethodName().equals("findIdealCenterPosition")) {
-////                            if(ficp++ ==0){
-////                                m.replace("{" +
-////                                        "$_ = $proceed($$);" +
-////                                        "$1.initializeDescription();" +
-////                                        "}");
-////                            }
-////                        }
-////                    } catch (Exception e) {
-////                        System.out.println("Failed to patch chimera trading");
-////                    }
-////                }
-////            };
-////        }
-
-
-}
-
-
-//GsonBuilder builder = new GsonBuilder();
-//if (CardModifierPatches.modifierAdapter == null) {
-//    CardModifierPatches.initializeAdapterFactory();
-//}
-//builder.registerTypeAdapterFactory(CardModifierPatches.modifierAdapter);
-//Gson gson = builder.create();
-//ModSaves.ArrayListOfJsonElement cardModifierSaves = ModSaves.cardModifierSaves.get(CardCrawlGame.saveFile);
-//i = 0;
-//if (cardModifierSaves != null) {
-//    for (AbstractCard card : AbstractDungeon.player.masterDeck.group) {
-//        ArrayList<AbstractCardModifier> cardModifiers = new ArrayList<>();
+//    @SpirePatch2(clz = NetworkCard.class, method = SpirePatch.CONSTRUCTOR, requiredModId = "spireTogether")
+//    public static class NetworkCardFields {
+//        @SpireRawPatch
+//        public static void addModifiers(CtBehavior ctBehavoir) throws CannotCompileException, NotFoundException {
+////            CtClass runData = ctBehavoir.getDeclaringClass().getClassPool().get("spireTogether.network.objects.runData");
 //
-//        JsonElement loaded = i >= cardModifierSaves.size() ? null : cardModifierSaves.get(i);
-//        if (loaded != null && loaded.isJsonArray()) {
-//            JsonArray array = loaded.getAsJsonArray();
+////            String fieldSource = "public java.util.ArrayList<java.lang.String> cardModifiers = new java.util.ArrayList<>();";
 //
-//            for (JsonElement element : array) {
-//                AbstractCardModifier cardModifier = null;
-//                try {
-//                    cardModifier = gson.fromJson(element, new TypeToken<AbstractCardModifier>() {
-//                    }.getType());
-//                } catch (Exception e) {
-//                    System.out.println("Unable to load cardmod: " + element);
-//                    cardModifiers.add(getErrorMod());
+////            CtField field =  CtField.make(fieldSource, ctBehavoir.getDeclaringClass());
+//            CtClass ctClass = ClassPool.getDefault().get("java.util.ArrayList");
+//
+//            ctClass.setGenericSignature("Ljava/util/ArrayList<Ljava/lang/String;>;");
+//
+//            CtField field = new CtField(ctClass, "cardModifiers", ctBehavoir.getDeclaringClass());
+//
+//            ctBehavoir.getDeclaringClass().addField(field);
+//        }
+//
+////        public static SpireField<ArrayList<String>> cardModifiers = new SpireField<>(ArrayList::new);
+//    }
+//
+//
+//    @SpirePatch2(clz = NetworkCard.class, method = "Generate", paramtypez = {AbstractCard.class, AbstractMonster.class}, requiredModId = "spireTogether")
+//    public static class GeneratePatch {
+//        @SpirePostfixPatch
+//        public static NetworkCard patch(AbstractCard c, NetworkCard __result) {
+//
+//            if (__result == null) {
+//                return null;
+//            }
+//
+//            if (Loader.isModLoaded("CardAugments")) {
+//                ArrayList<String> modifierIDs = new ArrayList<>();
+//                for (AbstractCardModifier m : CardModifierManager.modifiers(c)) {
+//                    if (m instanceof AbstractAugment) {
+//                        modifierIDs.add(m.identifier(c));
+////                        __result.cardModifiers.add(m.identifier(c));
+//                    }
 //                }
-//                if (cardModifier != null) {
-//                    cardModifiers.add(cardModifier);
+////                NetworkCardFields.cardModifiers.set(__result, modifierIDs);
+////                __result.cardModifiers = modifierIDs;
+//                ReflectionHacks.setPrivate(__result, NetworkCard.class, "cardModifiers", modifierIDs);
+//            }
+//
+//            return __result;
+//        }
+//    }
+//
+//
+//    @SpirePatch2(clz = NetworkCard.class, method = "ToStandard", paramtypez = {}, requiredModId = "spireTogether")
+//    public static class ToStandardPatch {
+//        @SpirePostfixPatch
+//        public static AbstractCard patch(NetworkCard __instance, AbstractCard __result) {
+//
+//            // Guard against null card reconstruction to avoid NPEs during modifier application
+//            if (__result == null) {
+//                return null;
+//            }
+//
+//            if (Loader.isModLoaded("CardAugments")) {
+////                ArrayList<String> modifierIDs = NetworkCardFields.cardModifiers.get(__instance);
+//                ArrayList<String> modifierIDs = ReflectionHacks.getPrivate(__instance, NetworkCard.class, "cardModifiers");
+//                if (modifierIDs == null) {
+//                    return __result;
+//                }
+//                for (String modID : modifierIDs) {
+//                    if (CardAugmentsMod.modMap.containsKey(modID)) {
+//                        AbstractAugment a = CardAugmentsMod.modMap.get(modID);
+//                        if (a != null) {  // Removed: && a.canApplyTo(__result)
+//                            addModifierButDontRunInitial(__result, a);
+//                        }
+//                    }
 //                }
 //            }
+//
+//            return __result;
 //        }
-//        CardModifierManager.removeAllModifiers(card, true);
-//        for (AbstractCardModifier mod : cardModifiers) {
-//            CardModifierManager.addModifier(card, mod.makeCopy());
-//        }
-//        i++;
+//    }
+}
