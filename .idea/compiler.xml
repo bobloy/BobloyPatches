@@ -9,6 +9,7 @@
         <module name="ShopMod" />
         <module name="BaseMod" />
         <module name="skindex" />
+        <module name="WatDis" />
         <module name="SpireTogether" />
         <module name="Conspire" />
         <module name="chimeracardsplus" />
