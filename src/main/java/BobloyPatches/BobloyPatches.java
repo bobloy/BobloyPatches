@@ -7,7 +7,8 @@ import com.evacipated.cardcrawl.modthespire.Loader;
 import com.evacipated.cardcrawl.modthespire.lib.SpireInitializer;
 import com.megacrit.cardcrawl.cards.CardGroup;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
-import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import pansTrinkets.DefaultMod;
 import pansTrinkets.helpers.TrinketHelper;
 import spireTogether.subscribers.TiSSubscribers;
@@ -15,6 +16,7 @@ import spireTogether.subscribers.TiSSubscribers;
 @SuppressWarnings({"unused", "WeakerAccess"})
 @SpireInitializer
 public class BobloyPatches implements PostInitializeSubscriber, PostCreateStartingDeckSubscriber {
+    public static final Logger logger = LogManager.getLogger(BobloyPatches.class.getName());
 
     public static final String modID = "bobloypatches";
 
@@ -35,12 +37,13 @@ public class BobloyPatches implements PostInitializeSubscriber, PostCreateStarti
     }
 
     public static void initialize() {
-        BobloyPatches thismod = new BobloyPatches();
+        BobloyPatches bobloyPatches = new BobloyPatches();
     }
 
     @Override
     public void receivePostInitialize() {
         TiSSubscribers.subscribe(new P2PMessageAnalyzer());
+        logger.info("========================= BobloyPatches Initialized. =========================");
     }
 
     @Override
