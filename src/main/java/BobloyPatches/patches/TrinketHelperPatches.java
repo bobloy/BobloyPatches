@@ -2,6 +2,7 @@ package BobloyPatches.patches;
 
 import java.lang.System;
 
+import BobloyPatches.util.ModIDs;
 import basemod.abstracts.CustomSavable;
 import com.evacipated.cardcrawl.modthespire.Loader;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
@@ -47,7 +48,7 @@ public class TrinketHelperPatches implements CustomSavable<Float> {
             clz = TrinketHelper.class,
             method = "changeMaxWeight",
             paramtypez = {int.class},
-            requiredModId = "PansTrinkets"
+            requiredModId = ModIDs.pansTrinkets
     )
     public static class TrinketHelperPatchesChangeMaxWeightPatch {
         @SpirePostfixPatch
@@ -65,7 +66,7 @@ public class TrinketHelperPatches implements CustomSavable<Float> {
             clz = TrinketHelper.class,
             method = "changeMaxWeight",
             paramtypez = {float.class},
-            requiredModId = "PansTrinkets"
+            requiredModId = ModIDs.pansTrinkets
     )
     public static class TrinketHelperPatchesChangeMaxWeightPatchF {
         @SpirePostfixPatch
@@ -84,7 +85,8 @@ public class TrinketHelperPatches implements CustomSavable<Float> {
     @SpirePatch(
             clz = CardGroup.class,
             method = "removeCard",
-            paramtypez = {AbstractCard.class}
+            paramtypez = {AbstractCard.class},
+            requiredModId = ModIDs.pansTrinkets
     )
     public static class OnRemoveCardFromMasterDeckPatch {
         public static void Postfix(CardGroup __instance, AbstractCard c) {

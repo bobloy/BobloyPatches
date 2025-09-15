@@ -92,7 +92,21 @@
             <artifactId>CardAugments</artifactId>
             <version>1.0.5</version>
             <scope>system</scope>
-            <systemPath>${steam.path}/workshop/content/646570/2970981743/CardAugments.jar</systemPath>
+            <systemPath>${steam.path}${workshop.path}/2970981743/CardAugments.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>conspire</groupId>
+            <artifactId>Conspire</artifactId>
+            <version>1.7.0</version>
+            <scope>system</scope>
+            <systemPath>${steam.path}${workshop.path}/1612329757/Conspire.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>aspiration</groupId>
+            <artifactId>Aspiration</artifactId>
+            <version>1.7.0</version>
+            <scope>system</scope>
+            <systemPath>${steam.path}${workshop.path}/1611701846/Aspiration.jar</systemPath>
         </dependency>
     </dependencies>
 
