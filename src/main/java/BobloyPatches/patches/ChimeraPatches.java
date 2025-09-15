@@ -1,6 +1,7 @@
 package BobloyPatches.patches;
 
 
+import BobloyPatches.util.ModIDs;
 import CardAugments.CardAugmentsMod;
 import basemod.abstracts.AbstractCardModifier;
 import basemod.helpers.CardModifierManager;
@@ -14,7 +15,7 @@ import spireTogether.screens.trading.TradingScreen;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static BobloyPatches.network.P2PMessageSender_Bobloy.cardAugmentTradeRequest;
+import static BobloyPatches.network.P2PMessageSender_Bobloy.sendChimeraTrade;
 
 public class ChimeraPatches {
     static int isTrading = 0;
@@ -30,7 +31,7 @@ public class ChimeraPatches {
 
     }
 
-    @SpirePatch2(clz = CardAugmentsMod.class, method = "rollCardAugment", paramtypez = {AbstractCard.class, int.class}, requiredModId = "CardAugments")
+    @SpirePatch2(clz = CardAugmentsMod.class, method = "rollCardAugment", paramtypez = {AbstractCard.class, int.class}, requiredModId = ModIDs.cardAugments)
     public static class ModifySpawnedCardsPatch {
         @SpirePrefixPatch
         public static SpireReturn<Void> patch() {
@@ -42,7 +43,7 @@ public class ChimeraPatches {
         }
     }
 
-    @SpirePatch2(clz = P2PCallbacks.class, method = "OnTradeToModifyReceivingCards", requiredModId = "spireTogether")
+    @SpirePatch2(clz = P2PCallbacks.class, method = "OnTradeToModifyReceivingCards", requiredModId = ModIDs.spireTogether)
     public static class TradePatch {
         @SpirePostfixPatch
         public static ArrayList<AbstractCard> patch(ArrayList<AbstractCard> __result) {
@@ -55,14 +56,14 @@ public class ChimeraPatches {
     }
 
     // NEW METHOD: ONLY WORKS FOR TRADING
-    @SpirePatch2(clz = P2PMessageSender.class, method = "Send_TradingChangedCards", requiredModId = "spireTogether")
+    @SpirePatch2(clz = P2PMessageSender.class, method = "Send_TradingChangedCards", requiredModId = ModIDs.spireTogether)
     public static class Send_TradingChangedCardsPatch {
         @SpirePostfixPatch
         public static void patch(Integer playerID) {
             if (!Loader.isModLoaded("CardAugments")) {
                 return;
             }
-            cardAugmentTradeRequest(TradingScreen.tradingScreen.playerCards, playerID);
+            sendChimeraTrade(TradingScreen.tradingScreen.playerCards, playerID);
         }
     }
 

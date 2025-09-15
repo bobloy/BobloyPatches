@@ -3,9 +3,14 @@ package BobloyPatches.network;
 
 import CardAugments.CardAugmentsMod;
 import CardAugments.cardmods.AbstractAugment;
+import BobloyPatches.patches.ConspirePatches;
+import com.megacrit.cardcrawl.core.AbstractCreature;
+import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
+import conspire.actions.ReduceHolyAction;
 import spireTogether.screens.trading.TradingScreen;
 import spireTogether.subscribers.TiSNetworkMessageSubscriber;
 import spireTogether.util.NetworkMessage;
+import spireTogether.util.SpireHelp;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +39,23 @@ public class P2PMessageAnalyzer_Bobloy implements TiSNetworkMessageSubscriber {
 
             }
 
+        }
+
+        if (messageRequest.equals(P2PRequests_Bobloy.aspirationReduceHolyAction)){
+            Object[] objectArr = (Object[]) messageObject;
+
+            String creatureId = (String) objectArr[0];
+            Integer amount = (Integer) objectArr[1];
+
+            AbstractCreature creature = SpireHelp.Gameplay.UIDToCreature(creatureId);
+            if(creature != null){ // Implies you're in the same room I think
+                try {
+                    ConspirePatches.suppressReduceHolyNetwork = true;
+                    AbstractDungeon.actionManager.addToBottom(new ReduceHolyAction(creature, amount));
+                } finally {
+                    ConspirePatches.suppressReduceHolyNetwork = false;
+                }
+            }
         }
     }
 }

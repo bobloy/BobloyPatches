@@ -5,15 +5,17 @@ import basemod.abstracts.AbstractCardModifier;
 import basemod.helpers.CardModifierManager;
 import com.evacipated.cardcrawl.modthespire.Loader;
 import com.megacrit.cardcrawl.cards.AbstractCard;
+import com.megacrit.cardcrawl.core.AbstractCreature;
 import spireTogether.network.P2P.P2PManager;
 import spireTogether.util.NetworkMessage;
+import spireTogether.util.SpireHelp;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 
 public class P2PMessageSender_Bobloy {
-    public static void cardAugmentTradeRequest(ArrayList<AbstractCard> cards, Integer playerID) {
+    public static void sendChimeraTrade(ArrayList<AbstractCard> cards, Integer playerID) {
         if (cards.isEmpty() || !Loader.isModLoaded("CardAugments")) return;
 
         HashMap<Integer, ArrayList<String>> cardIdentifierMap = new HashMap<>();
@@ -36,5 +38,10 @@ public class P2PMessageSender_Bobloy {
 
         P2PManager.SendData(new NetworkMessage(P2PRequests_Bobloy.chimeraAugmentTradeRequest, cardIdentifierMap), playerID);
 
+    }
+
+    public static void sendReduceHolyAction(AbstractCreature target, int amount){
+        String id = SpireHelp.Gameplay.CreatureToUID(target);
+        P2PManager.SendData(P2PRequests_Bobloy.aspirationReduceHolyAction, id, amount);
     }
 }
