@@ -1,6 +1,7 @@
 package BobloyPatches;
 
 import BobloyPatches.network.P2PMessageAnalyzer_Bobloy;
+import BobloyPatches.network.RelicTradingRules;
 import basemod.BaseMod;
 import basemod.interfaces.*;
 import com.evacipated.cardcrawl.modthespire.Loader;
@@ -11,6 +12,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pansTrinkets.DefaultMod;
 import pansTrinkets.helpers.TrinketHelper;
+import spireTogether.SpireTogetherMod;
+import spireTogether.modcompat.downfall.subscribers.DownfallTradingRules;
 import spireTogether.subscribers.TiSSubscribers;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
@@ -43,6 +46,7 @@ public class BobloyPatches implements PostInitializeSubscriber, PostCreateStarti
     @Override
     public void receivePostInitialize() {
         TiSSubscribers.subscribe(new P2PMessageAnalyzer_Bobloy());
+        SpireTogetherMod.subscribe(new RelicTradingRules());
         logger.info("========================= BobloyPatches Initialized. =========================");
     }
 

@@ -23,9 +23,9 @@
 
     <groupId>${modID}</groupId>
     <artifactId>${modID}</artifactId>
-    <version>0.0.3</version>
+    <version>0.0.4</version>
     <name>BobloyPatches</name>
-    <description>A testing zone, intended to prepare your mod for liftoff.</description>
+    <description>TiS Multiplayer Compatability patches.</description>
     <!-- Change the above for mod information. -->
 
     <dependencies>

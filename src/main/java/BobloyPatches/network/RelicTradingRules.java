@@ -8,23 +8,24 @@ import spireTogether.subscribers.TiSTradingRulesSubscriber;
 public class RelicTradingRules implements TiSTradingRulesSubscriber {
     @Override
     public boolean canTradeCard(AbstractCard abstractCard) {
-        return false;
+        return true;
     }
 
     @Override
     public boolean canTradeRelic(AbstractRelic abstractRelic) {
         if(abstractRelic.relicId.equals("aspiration:Nostalgia")) return false;
+        if(abstractRelic.relicId.startsWith("aspiration:") && abstractRelic.relicId.endsWith("Skillbook")) return false;
 
-        return false;
+        return true;
     }
 
     @Override
     public boolean canTradePotion(AbstractPotion abstractPotion) {
-        return false;
+        return true;
     }
 
     @Override
     public boolean canTradeGold(int i) {
-        return false;
+        return true;
     }
 }

@@ -5,10 +5,10 @@ import basemod.abstracts.AbstractCardModifier;
 import basemod.helpers.CardModifierManager;
 import com.evacipated.cardcrawl.modthespire.Loader;
 import com.megacrit.cardcrawl.cards.AbstractCard;
-import com.megacrit.cardcrawl.core.AbstractCreature;
+import com.megacrit.cardcrawl.monsters.AbstractMonster;
 import spireTogether.network.P2P.P2PManager;
+import spireTogether.patches.monsters.MonsterFieldPatches;
 import spireTogether.util.NetworkMessage;
-import spireTogether.util.SpireHelp;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,8 +40,9 @@ public class P2PMessageSender_Bobloy {
 
     }
 
-    public static void sendReduceHolyAction(AbstractCreature target, int amount){
-        String id = SpireHelp.Gameplay.CreatureToUID(target);
-        P2PManager.SendData(P2PRequests_Bobloy.aspirationReduceHolyAction, id, amount);
+    public static void sendReduceHolyAction(AbstractMonster target){
+        String id = MonsterFieldPatches.GetMonsterID(target);
+
+        P2PManager.SendData(P2PRequests_Bobloy.aspirationReduceHolyAction, id);
     }
 }
