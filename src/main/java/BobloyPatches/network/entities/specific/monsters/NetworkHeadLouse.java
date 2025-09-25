@@ -2,11 +2,10 @@ package BobloyPatches.network.entities.specific.monsters;
 
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
-import com.megacrit.cardcrawl.monsters.city.GremlinLeader;
 import conspire.monsters.HeadLouse;
 import dLib.util.Reflection;
 import spireTogether.network.objects.entities.NetworkMonster;
-import spireTogether.patches.monsters.MonsterFieldPatches;
+import spireTogether.patches.monsters.MonsterFieldPatches.MonsterFieldPatcher;
 
 import java.io.Serializable;
 
@@ -16,17 +15,17 @@ import static conspire.monsters.HeadLouse.MAX_LICE;
 public class NetworkHeadLouse extends NetworkMonster implements Serializable {
     static final long serialVersionUID = 1L;
 
-    public String[] minions;
+    public String[] lice;
 
     public NetworkHeadLouse(HeadLouse l){
         super(l);
-        minions = new String[MAX_LICE];
+        lice = new String[MAX_LICE];
 
         AbstractMonster[] lice = Reflection.getFieldValue("lice", l);
 
         for(int i = 0; i < MAX_LICE; i++){
-            if(lice[i] != null) minions[i] = MonsterFieldPatches.MonsterFieldPatcher.uniqueID.get(lice[i]);
-            else minions[i] = null;
+            if(lice[i] != null) this.lice[i] = MonsterFieldPatcher.uniqueID.get(lice[i]);
+            else this.lice[i] = null;
         }
     }
 
@@ -37,10 +36,10 @@ public class NetworkHeadLouse extends NetworkMonster implements Serializable {
         AbstractMonster[] lice = Reflection.getFieldValue("lice", gl);
 
         for(int i = 0; i < MAX_LICE; i++){
-            if(minions[i] != null){
+            if(this.lice[i] != null){
                 for(int j = 0; j < AbstractDungeon.getMonsters().monsters.size(); j++){
                     AbstractMonster m = AbstractDungeon.getMonsters().monsters.get(j);
-                    if(minions[i].equals(MonsterFieldPatches.MonsterFieldPatcher.uniqueID.get(m))){
+                    if(this.lice[i].equals(MonsterFieldPatcher.uniqueID.get(m))){
                         lice[i] = m;
                     }
                 }

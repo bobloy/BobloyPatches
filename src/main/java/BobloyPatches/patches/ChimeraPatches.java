@@ -39,21 +39,29 @@ public class ChimeraPatches {
             mod.onInitialApplication(card);
             CardModifierManager.onCardModified(card);
 
+            // Reapply card values that were lost during the initial application
             card.timesUpgraded = timesUpgraded;
             card.multiDamage = multiDamage;
             Reflection.LoadFieldValuesOnObject(card, extraData);
+
+            DontRollChimera.dontRollChimera.set(card, true);
 
             card.initializeDescription();
         }
 
     }
 
+    @SpirePatch2(clz = AbstractCard.class, method = SpirePatch.CLASS, requiredModId = ModIDs.spireTogether)
+    public static class DontRollChimera{
+        public static SpireField<Boolean> dontRollChimera = new SpireField<>(() -> false);
+    }
 
     @SpirePatch2(clz = OnCardGeneratedPatches.ModifySpawnedMasterDeckCards.class, method = "patch", requiredModId = ModIDs.spireTogether)
     public static class ModifySpawnedMasterDeckCardsPatch {
         @SpirePrefixPatch
         public static SpireReturn<Void> patch(AbstractCard ___card) {
-            if (!CardModifierManager.modifiers(___card).isEmpty()) {
+            if (DontRollChimera.dontRollChimera.get(___card)) {
+                DontRollChimera.dontRollChimera.set(___card, false);
                 return SpireReturn.Return(null);
             }
             return SpireReturn.Continue();
@@ -72,64 +80,31 @@ public class ChimeraPatches {
         }
     }
 
-
-    // Specifically targeted no-chimera triggers on trade.
-//    @SpirePatch2(clz = CardAugmentsMod.class, method = "rollCardAugment", paramtypez = {AbstractCard.class, int.class}, requiredModId = ModIDs.cardAugments)
-//    public static class ModifySpawnedCardsPatch {
-//        @SpirePrefixPatch
-//        public static SpireReturn<Void> patch() {
-//            if (isTrading > 0) {
-//                isTrading--;
-//                return SpireReturn.Return(null);
-//            }
-//            return SpireReturn.Continue();
-//        }
-//    }
-//
-//    @SpirePatch2(clz = P2PCallbacks.class, method = "OnTradeToModifyReceivingCards", requiredModId = ModIDs.spireTogether)
-//    public static class TradePatch {
-//        @SpirePostfixPatch
-//        public static ArrayList<AbstractCard> patch(ArrayList<AbstractCard> __result) {
-//            if (!Loader.isModLoaded("CardAugments") || __result.isEmpty()) {
-//                return __result;
-//            }
-//            isTrading = __result.size();
-//            return __result;
-//        }
-//    }
-
-    // NEW METHOD: ONLY WORKS FOR TRADING
-//    @SpirePatch2(clz = P2PMessageSender.class, method = "Send_TradingChangedCards", requiredModId = ModIDs.spireTogether)
-//    public static class Send_TradingChangedCardsPatch {
-//        @SpirePostfixPatch
-//        public static void patch(Integer playerID) {
-//            if (!Loader.isModLoaded("CardAugments")) {
-//                return;
-//            }
-//            sendChimeraTrade(TradingScreen.tradingScreen.playerCards, playerID);
-//        }
-//    }
-
-    // OLD METHOD: WORKS FOR ALL CARDS INSTEAD OF JUST TRADING, RISKY??
     @SpirePatch2(clz = NetworkCard.class, method = SpirePatch.CONSTRUCTOR, requiredModId = "spireTogether")
     public static class NetworkCardFields {
         @SpireRawPatch
         public static void addModifiers(CtBehavior ctBehavoir) throws CannotCompileException, NotFoundException {
-//            CtClass runData = ctBehavoir.getDeclaringClass().getClassPool().get("spireTogether.network.objects.runData");
+            CtClass declaring = ctBehavoir.getDeclaringClass();
+            // Avoid adding the field twice if other patches or game versions already defined it
 
-//            String fieldSource = "public java.util.ArrayList<java.lang.String> cardModifiers = new java.util.ArrayList<>();";
+            try {
+                if (declaring.getField("cardModifiers") != null) {
+                    return;
+                }
+            }catch (NotFoundException ignored) {}
 
-//            CtField field =  CtField.make(fieldSource, ctBehavoir.getDeclaringClass());
-            CtClass ctClass = ClassPool.getDefault().get("java.util.ArrayList");
-
-            ctClass.setGenericSignature("Ljava/util/ArrayList<Ljava/lang/String;>;");
-
-            CtField field = new CtField(ctClass, "cardModifiers", ctBehavoir.getDeclaringClass());
-
-            ctBehavoir.getDeclaringClass().addField(field);
+            ClassPool pool = declaring.getClassPool();
+            CtClass listType = pool.get("java.util.ArrayList"); // Do NOT change generic signature of JRE class
+            CtField field = new CtField(listType, "cardModifiers", declaring);
+            // Do not use a CtField initializer to avoid potential bad constructor signatures at runtime
+            // We'll set the field explicitly in a postfix patch after construction
+            declaring.addField(field);
         }
 
-//        public static SpireField<ArrayList<String>> cardModifiers = new SpireField<>(ArrayList::new);
+        @SpirePostfixPatch
+        public static void initModifiers(NetworkCard __instance){
+            ReflectionHacks.setPrivate(__instance, NetworkCard.class, "cardModifiers", new ArrayList<>());
+        }
     }
 
 
@@ -147,11 +122,8 @@ public class ChimeraPatches {
                 for (AbstractCardModifier m : CardModifierManager.modifiers(c)) {
                     if (m instanceof AbstractAugment) {
                         modifierIDs.add(m.identifier(c));
-//                        __result.cardModifiers.add(m.identifier(c));
                     }
                 }
-//                NetworkCardFields.cardModifiers.set(__result, modifierIDs);
-//                __result.cardModifiers = modifierIDs;
                 ReflectionHacks.setPrivate(__result, NetworkCard.class, "cardModifiers", modifierIDs);
             }
 

@@ -23,7 +23,7 @@
 
     <groupId>${modID}</groupId>
     <artifactId>${modID}</artifactId>
-    <version>0.0.4</version>
+    <version>0.0.5</version>
     <name>BobloyPatches</name>
     <description>TiS Multiplayer Compatability patches.</description>
     <!-- Change the above for mod information. -->
@@ -107,6 +107,13 @@
             <version>1.7.0</version>
             <scope>system</scope>
             <systemPath>${steam.path}${workshop.path}/1611701846/Aspiration.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>evolution</groupId>
+            <artifactId>Evolution</artifactId>
+            <version>1.7.0</version>
+            <scope>system</scope>
+            <systemPath>${steam.path}${workshop.path}/2339471027/Evolution.jar</systemPath>
         </dependency>
     </dependencies>
 

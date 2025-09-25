@@ -7,4 +7,5 @@ public class ModIDs {
     public static final String pansTrinkets = "pans-trinkets";
     public static final String cardAugments = "CardAugments";
     public static final String spireTogether = "spireTogether";
+    public static final String evolution = "evolution";
 }

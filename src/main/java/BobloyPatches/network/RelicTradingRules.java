@@ -15,6 +15,7 @@ public class RelicTradingRules implements TiSTradingRulesSubscriber {
     public boolean canTradeRelic(AbstractRelic abstractRelic) {
         if(abstractRelic.relicId.equals("aspiration:Nostalgia")) return false;
         if(abstractRelic.relicId.startsWith("aspiration:") && abstractRelic.relicId.endsWith("Skillbook")) return false;
+        if(abstractRelic.relicId.equals("EVO:Axolotl")) return false;
 
         return true;
     }

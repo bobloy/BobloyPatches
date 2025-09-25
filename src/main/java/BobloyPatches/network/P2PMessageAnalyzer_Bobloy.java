@@ -1,31 +1,16 @@
 package BobloyPatches.network;
 
 
-import CardAugments.CardAugmentsMod;
-import CardAugments.cardmods.AbstractAugment;
-import BobloyPatches.patches.ConspirePatches;
-import com.megacrit.cardcrawl.core.AbstractCreature;
-import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
-import conspire.actions.ReduceHolyAction;
 import conspire.monsters.HollyBat;
 import conspire.powers.HolyPower;
 import spireTogether.network.P2P.P2PManager;
 import spireTogether.network.P2P.P2PPlayer;
-import spireTogether.network.objects.entities.NetworkMonster;
-import spireTogether.network.objects.entities.NetworkMonsterData;
 import spireTogether.network.objects.rooms.NetworkRoom;
 import spireTogether.other.RoomDataManager;
 import spireTogether.patches.monsters.MonsterFieldPatches;
-import spireTogether.screens.trading.TradingScreen;
 import spireTogether.subscribers.TiSNetworkMessageSubscriber;
 import spireTogether.util.NetworkMessage;
-import spireTogether.util.SpireHelp;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import static BobloyPatches.patches.ChimeraPatches.addModifierButDontRunInitial;
 
 public class P2PMessageAnalyzer_Bobloy implements TiSNetworkMessageSubscriber {
 
