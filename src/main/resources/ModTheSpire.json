@@ -8,7 +8,8 @@
   "mts_version": "${ModTheSpire.version}",
   "dependencies": [
     "basemod",
-    "stslib"
+    "stslib",
+    "spireTogether"
   ],
   "update_json": ""
 }

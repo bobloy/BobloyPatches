@@ -17,6 +17,6 @@ public class BlockReminderPatch {
             return SpireReturn.Return();
         }
         return SpireReturn.Continue();
-    };
+    }
 }
 

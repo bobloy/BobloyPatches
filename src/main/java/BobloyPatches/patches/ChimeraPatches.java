@@ -44,8 +44,6 @@ public class ChimeraPatches {
             card.multiDamage = multiDamage;
             Reflection.LoadFieldValuesOnObject(card, extraData);
 
-            DontRollChimera.dontRollChimera.set(card, true);
-
             card.initializeDescription();
         }
 
@@ -56,7 +54,7 @@ public class ChimeraPatches {
         public static SpireField<Boolean> dontRollChimera = new SpireField<>(() -> false);
     }
 
-    @SpirePatch2(clz = OnCardGeneratedPatches.ModifySpawnedMasterDeckCards.class, method = "patch", requiredModId = ModIDs.spireTogether)
+    @SpirePatch2(clz = OnCardGeneratedPatches.ModifySpawnedMasterDeckCards.class, method = "patch", requiredModId = ModIDs.cardAugments)
     public static class ModifySpawnedMasterDeckCardsPatch {
         @SpirePrefixPatch
         public static SpireReturn<Void> patch(AbstractCard ___card) {
@@ -68,7 +66,7 @@ public class ChimeraPatches {
         }
     }
 
-    @SpirePatch2(clz = OnCardGeneratedPatches.CreatedCards.class, method = "roll", requiredModId = ModIDs.spireTogether)
+    @SpirePatch(clz = OnCardGeneratedPatches.CreatedCards.class, method = "roll", requiredModId = ModIDs.cardAugments)
     public static class CreatedCardsPatch {
         @SpirePrefixPatch
         public static SpireReturn<Void> patch(Object[] __args) {
@@ -80,7 +78,7 @@ public class ChimeraPatches {
         }
     }
 
-    @SpirePatch2(clz = NetworkCard.class, method = SpirePatch.CONSTRUCTOR, requiredModId = "spireTogether")
+    @SpirePatch2(clz = NetworkCard.class, method = SpirePatch.CONSTRUCTOR, requiredModId = ModIDs.spireTogether)
     public static class NetworkCardFields {
         @SpireRawPatch
         public static void addModifiers(CtBehavior ctBehavoir) throws CannotCompileException, NotFoundException {
@@ -108,7 +106,7 @@ public class ChimeraPatches {
     }
 
 
-    @SpirePatch2(clz = NetworkCard.class, method = "Generate", paramtypez = {AbstractCard.class, AbstractMonster.class}, requiredModId = "spireTogether")
+    @SpirePatch2(clz = NetworkCard.class, method = "Generate", paramtypez = {AbstractCard.class, AbstractMonster.class}, requiredModId = ModIDs.spireTogether)
     public static class GeneratePatch {
         @SpirePostfixPatch
         public static NetworkCard patch(AbstractCard c, NetworkCard __result) {
@@ -132,7 +130,7 @@ public class ChimeraPatches {
     }
 
 
-    @SpirePatch2(clz = NetworkCard.class, method = "ToStandard", paramtypez = {}, requiredModId = "spireTogether")
+    @SpirePatch2(clz = NetworkCard.class, method = "ToStandard", paramtypez = {}, requiredModId = ModIDs.spireTogether)
     public static class ToStandardPatch {
         @SpirePostfixPatch
         public static AbstractCard patch(NetworkCard __instance, AbstractCard __result) {
@@ -145,6 +143,7 @@ public class ChimeraPatches {
             if (Loader.isModLoaded("CardAugments")) {
 //                ArrayList<String> modifierIDs = NetworkCardFields.cardModifiers.get(__instance);
                 ArrayList<String> modifierIDs = ReflectionHacks.getPrivate(__instance, NetworkCard.class, "cardModifiers");
+                DontRollChimera.dontRollChimera.set(__result, true);
                 if (modifierIDs == null) {
                     return __result;
                 }

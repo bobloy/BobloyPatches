@@ -8,4 +8,8 @@ public class ModIDs {
     public static final String cardAugments = "CardAugments";
     public static final String spireTogether = "spireTogether";
     public static final String evolution = "evolution";
+    public static final String shopMod = "ShopMod";
+    public static final String widePotions = "widepotions";
+    public static final String downfall = "downfall";
+    public static final String weightedPaths = "WeightedPaths";
 }

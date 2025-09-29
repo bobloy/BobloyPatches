@@ -115,8 +115,35 @@
             <scope>system</scope>
             <systemPath>${steam.path}${workshop.path}/2339471027/Evolution.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>shopmod</groupId>
+            <artifactId>ShopMod</artifactId>
+            <version>1.1.2</version>
+            <scope>system</scope>
+            <systemPath>${steam.path}${workshop.path}/1615802935/ShopMod.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.evacipated.cardcrawl.mod</groupId>
+            <artifactId>widepotions</artifactId>
+            <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${steam.path}${workshop.path}/2368513093/WidePotions.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.derekjass.sts</groupId>
+            <artifactId>weighted-paths</artifactId>
+            <version>0.0.0</version>
+            <scope>system</scope>
+            <systemPath>${steam.path}${workshop.path}/2373979745/WeightedPaths.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>mod-group-name</groupId>
+            <artifactId>EvilWithin</artifactId>
+            <version>0.1.0</version>
+            <scope>system</scope>
+            <systemPath>${steam.path}${workshop.path}/1610056683/Downfall.jar</systemPath>
+        </dependency>
     </dependencies>
-
 
     <!-- This is how your code is packaged into the jar file-->
     <build>

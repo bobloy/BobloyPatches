@@ -21,7 +21,7 @@ import static spireTogether.patches.SpawnedMonsterManager.monsterSpawnCount;
 public class HeadLousePatches {
 
         //* If we're summoning a gremlin, predetermine the gremlin type in a way it is network-consistent
-    @SpirePatch2(clz = HeadLouse.class, method = "makeLouse")
+    @SpirePatch2(clz = HeadLouse.class, method = "makeLouse", requiredModId = ModIDs.conspire)
     public static class MakeLouseActionPatcher {
         public static Random miscRng;
         public static Random aiRng;
