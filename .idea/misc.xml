@@ -15,6 +15,9 @@
         <option value="$PROJECT_DIR$/../../dLib/pom.xml" />
         <option value="$PROJECT_DIR$/../../Skindex/skindex/pom.xml" />
         <option value="$PROJECT_DIR$/../../Aspiration-StS/pom.xml" />
+        <option value="$PROJECT_DIR$/../../ModTheSpire/pom.xml" />
+        <option value="$PROJECT_DIR$/../../sts-weighted-paths/WeightedPaths/pom.xml" />
+        <option value="$PROJECT_DIR$/../../DownfallSTS/pom.xml" />
       </list>
     </option>
   </component>

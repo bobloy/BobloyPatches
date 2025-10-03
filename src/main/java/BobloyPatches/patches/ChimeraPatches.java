@@ -115,7 +115,7 @@ public class ChimeraPatches {
                 return null;
             }
 
-            if (Loader.isModLoaded("CardAugments")) {
+            if (Loader.isModLoaded(ModIDs.cardAugments)) {
                 ArrayList<String> modifierIDs = new ArrayList<>();
                 for (AbstractCardModifier m : CardModifierManager.modifiers(c)) {
                     if (m instanceof AbstractAugment) {
@@ -140,7 +140,7 @@ public class ChimeraPatches {
                 return null;
             }
 
-            if (Loader.isModLoaded("CardAugments")) {
+            if (Loader.isModLoaded(ModIDs.cardAugments)) {
 //                ArrayList<String> modifierIDs = NetworkCardFields.cardModifiers.get(__instance);
                 ArrayList<String> modifierIDs = ReflectionHacks.getPrivate(__instance, NetworkCard.class, "cardModifiers");
                 DontRollChimera.dontRollChimera.set(__result, true);

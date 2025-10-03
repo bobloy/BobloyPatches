@@ -2,19 +2,36 @@ package BobloyPatches.patches.conspire;
 
 import BobloyPatches.util.ModIDs;
 import com.evacipated.cardcrawl.modthespire.lib.*;
+import com.megacrit.cardcrawl.actions.common.ApplyPowerAction;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
 import com.megacrit.cardcrawl.monsters.exordium.LouseDefensive;
 import com.megacrit.cardcrawl.monsters.exordium.LouseNormal;
 import com.megacrit.cardcrawl.random.Random;
+import conspire.actions.SpawnLouseAction;
 import conspire.monsters.HeadLouse;
 import conspire.monsters.LouseWeak;
-import javassist.CannotCompileException;
+import conspire.powers.ReflectAttackPower;
+import conspire.powers.ReflectBlockPower;
+import conspire.powers.SheddingPower;
+import dLib.modcompat.ModManager;
+import downfall.monsters.NeowBoss;
+import javassist.*;
+import javassist.bytecode.DuplicateMemberException;
 import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
 import spireTogether.SpireTogetherMod;
+import spireTogether.network.P2P.P2PManager;
+import spireTogether.network.P2P.P2PMessageAnalyzer;
+import spireTogether.network.P2P.P2PPlayer;
+import spireTogether.network.P2P.P2PRequests;
+import spireTogether.network.objects.entities.NetworkMonster;
 import spireTogether.network.objects.rooms.NetworkLocation;
+import spireTogether.patches.monsters.MonsterFieldPatches;
+import spireTogether.util.NetworkMessage;
 import spireTogether.util.SpireHelp;
+
+import java.util.ArrayList;
 
 import static spireTogether.patches.SpawnedMonsterManager.monsterSpawnCount;
 
@@ -53,9 +70,11 @@ public class HeadLousePatches {
                 int mur = 0;
                 @Override
                 public void edit(MethodCall m) throws CannotCompileException {
-                    if (m.getMethodName().equals("MathUtils.random")) {
-                        if (mur++ == 0 || mur == 1) {
-                            m.replace("{com.megacrit.cardcrawl.dungeons.AbstractDungeon.miscRng.random($0, $1);}");
+                    if (m.getClassName().equals("com.badlogic.gdx.math.MathUtils") && 
+                        m.getMethodName().equals("random")) {
+                        mur++;
+                        if (mur == 1 || mur == 2) {
+                            m.replace("{ $_ = com.megacrit.cardcrawl.dungeons.AbstractDungeon.miscRng.random($1, $2); }");
                         }
                     }
                 }
@@ -80,13 +99,108 @@ public class HeadLousePatches {
                     --toSummon[0];
                 }
             }
-//            AbstractMonster[] lice = Reflection.getFieldValue("lice", __instance);
-//            lice[0] = AbstractDungeon.getMonsters().monsters.get(0);
-//            lice[1] = AbstractDungeon.getMonsters().monsters.get(1);
-//            lice[2] = AbstractDungeon.getMonsters().monsters.get(2);
-//            Reflection.setFieldValue("lice", __instance, lice);
         }
     }
+
+    @SpirePatch2(clz = SheddingPower.class, method = SpirePatch.CONSTRUCTOR, requiredModId = ModIDs.conspire)
+    public static class SheddingPowerPatch {
+        @SpireRawPatch
+        public static void addConstructor(CtBehavior ctMethodToPatch) throws NotFoundException, CannotCompileException {
+            CtClass ctClass = ctMethodToPatch.getDeclaringClass();
+            ClassPool pool = ctClass.getClassPool();
+
+
+            CtConstructor customConstructor2 = CtNewConstructor.make(
+                    new CtClass[]{
+                            pool.getCtClass(AbstractMonster.class.getName()),
+                            CtClass.intType
+                    },
+                    new CtClass[0], // no exceptions
+                    "{ " +
+                            "this($1); " +
+                            "this.amount = $2;" +
+                            "}", // $1 = owner, $2 = amount
+                    ctClass
+            );
+            ctClass.addConstructor(customConstructor2);
+
+
+//            // Maybe unnecessary if `applyPowers` calls it
+//            CtClass superClass = ctClass.getSuperclass().getSuperclass(); // AbstractConspirePower -> AbstractPower
+//            CtMethod superMethod = superClass.getDeclaredMethod("stackPower");
+//            CtMethod updateMethod = CtNewMethod.delegator(superMethod, ctClass);
+//            try {
+//                ctClass.addMethod(updateMethod);
+//            } catch (DuplicateMemberException ignored) {
+//                updateMethod = ctClass.getDeclaredMethod("stackPower");
+//            }
+//            updateMethod.insertAfter("{this.updateDescription();};");
+        }
+    }
+
+    @SpirePatch2(clz = SheddingPower.class, method = "onAttacked", requiredModId = ModIDs.conspire)
+    public static class SheddingPowerAttackedPatch {
+        private static int originalAmount;
+
+        @SpirePrefixPatch
+        public static void Prefix(SheddingPower __instance) {
+            // Save the original amount before the method modifies it
+            originalAmount = __instance.amount;
+        }
+
+        @SpirePostfixPatch
+        public static int Postfix(int __result, SheddingPower __instance) {
+
+            // Minions have spawned
+            if (__instance.amount < originalAmount) {
+                // Revert the amount to its original value
+                __instance.amount = originalAmount;
+
+                // Create and enqueue the ApplyPowerAction with the calculated damage
+                AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(
+                        __instance.owner,
+                        __instance.owner,
+                        new SheddingPower((AbstractMonster)__instance.owner),
+                        -1
+                ));
+            }
+
+            return __result;
+        }
+    }
+
+    @SpirePatch2(clz = P2PMessageAnalyzer.class, method = "AnalyzeMessage", requiredModId = ModIDs.conspire, optional = true)
+    public static class SheddingPowerSpawned{
+        @SpirePostfixPatch
+        public static void AnalyzerPostfix(NetworkMessage data){
+            P2PPlayer p = P2PManager.GetPlayer(data.senderID);
+            if(p != null){
+                if (data.request.equals(P2PRequests.monsterSpawned)) {
+                    Object[] dataIn = (Object[]) data.object;
+                    NetworkLocation l = (NetworkLocation) dataIn[0];
+                    NetworkMonster m = (NetworkMonster) dataIn[1];
+
+                    if(l.IsSameAsCurrentRoomAndAction()){
+                        if(SpireHelp.Gameplay.AreMonstersPresent()){
+                            ArrayList<AbstractMonster> roomMonsters = AbstractDungeon.getMonsters().monsters;
+                            if(!roomMonsters.isEmpty() && roomMonsters.stream().anyMatch(rm -> rm instanceof HeadLouse)){
+                                for(AbstractMonster roomMonster : roomMonsters){
+                                    String monsterId = MonsterFieldPatches.MonsterFieldPatcher.uniqueID.get(roomMonster);
+                                    if(monsterId.equals(m.uniqueID)){
+                                        return;
+                                    }
+                                }
+
+                                AbstractMonster monster = m.ToStandard();
+                                if(monster != null) AbstractDungeon.getCurrRoom().monsters.monsters.add(monster);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
 //    @SpirePatch2(clz = Conspire.class, method = "receiveEditMonsters")
 //    public static class ReceiveEditMonstersPatch {

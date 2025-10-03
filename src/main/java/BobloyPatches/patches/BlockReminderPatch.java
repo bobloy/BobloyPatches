@@ -10,7 +10,7 @@ import spireTogether.network.P2P.P2PPlayer;
 @SpirePatch(clz = P2PPlayer.class, method = "addBlock", requiredModId = ModIDs.spireTogether)
 public class BlockReminderPatch {
     public static SpireReturn<Void> Prefix(P2PPlayer __instance, int blockAmount){
-        if (!Loader.isModLoaded("block-reminder")){
+        if (!Loader.isModLoaded(ModIDs.blockReminder)){
             return SpireReturn.Continue();
         }
         if(BlockPreview.isPreview){

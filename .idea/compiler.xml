@@ -7,17 +7,21 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="ShopMod" />
-        <module name="BaseMod" />
         <module name="skindex" />
         <module name="WatDis" />
         <module name="SpireTogether" />
+        <module name="BobloyPatches" />
+        <module name="dLib" />
+        <module name="weighted-paths" />
+        <module name="BaseMod" />
+        <module name="ModTheSpire" />
+        <module name="EvilWithin" />
+        <module name="DownfallSTS" />
         <module name="Conspire" />
         <module name="chimeracardsplus" />
-        <module name="BobloyPatches" />
         <module name="CardAugments" />
         <module name="tisCardPack" />
         <module name="TestMod" />
-        <module name="dLib" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

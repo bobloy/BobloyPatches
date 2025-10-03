@@ -1,5 +1,6 @@
 package BobloyPatches.network;
 
+import BobloyPatches.util.ModIDs;
 import CardAugments.cardmods.AbstractAugment;
 import basemod.abstracts.AbstractCardModifier;
 import basemod.helpers.CardModifierManager;
@@ -16,7 +17,7 @@ import java.util.HashMap;
 
 public class P2PMessageSender_Bobloy {
     public static void sendChimeraTrade(ArrayList<AbstractCard> cards, Integer playerID) {
-        if (cards.isEmpty() || !Loader.isModLoaded("CardAugments")) return;
+        if (cards.isEmpty() || !Loader.isModLoaded(ModIDs.cardAugments)) return;
 
         HashMap<Integer, ArrayList<String>> cardIdentifierMap = new HashMap<>();
 

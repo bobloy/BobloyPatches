@@ -54,7 +54,7 @@ public class BobloyPatches implements PostInitializeSubscriber, PostCreateStarti
 
     @Override
     public void receivePostCreateStartingDeck(AbstractPlayer.PlayerClass pc, CardGroup cg){
-        if (Loader.isModLoaded("PansTrinkets") && DefaultMod.enableProgressiveMaxWeight) {
+        if (Loader.isModLoaded(ModIDs.pansTrinkets) && DefaultMod.enableProgressiveMaxWeight) {
             System.out.println("BobloyPatchesreceivePostCreateStartingDeck | Initial Max Weight set!");
             TrinketHelper.changeMaxWeight(0);
         }

@@ -6,11 +6,14 @@
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../CardAugments" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../ChimeraCardsPlus" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../DownfallSTS" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../ModTheSpire" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../Skindex" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../TiS-Official-Item-Pack" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../Together-in-Spire" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../dLib" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../sts-conspire" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../sts-shop-mod" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../sts-weighted-paths" vcs="Git" />
   </component>
 </project>

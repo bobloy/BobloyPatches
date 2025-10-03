@@ -2,6 +2,7 @@ package BobloyPatches.patches;
 
 import java.lang.System;
 
+import BobloyPatches.BobloyPatches;
 import BobloyPatches.util.ModIDs;
 import basemod.abstracts.CustomSavable;
 import com.evacipated.cardcrawl.modthespire.Loader;
@@ -10,12 +11,15 @@ import com.evacipated.cardcrawl.modthespire.lib.SpirePostfixPatch;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.cards.CardGroup;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import pansTrinkets.DefaultMod;
 import pansTrinkets.helpers.TrinketHelper;
 
 // TODO figure out     "pansTrinkets" dependency in ModTheSpire.json
 
 public class TrinketHelperPatches implements CustomSavable<Float> {
+    public static final Logger logger = LogManager.getLogger(TrinketHelperPatches.class.getName());
 
     public static int modWeight =  0;
     public static Float modWeightF =  0f;
@@ -53,7 +57,7 @@ public class TrinketHelperPatches implements CustomSavable<Float> {
     public static class TrinketHelperPatchesChangeMaxWeightPatch {
         @SpirePostfixPatch
         public static void changeMaxWeightPatch(int change) {
-            System.out.println("TrinketHelperPatchesChangeMaxWeightPatch | Max Weight changed!");
+            logger.info("TrinketHelperPatchesChangeMaxWeightPatch | Max Weight changed!");
             changeModWeight(change);
             if (DefaultMod.enableProgressiveMaxWeight) {
                 TrinketHelper.maxWeightF = (float) (AbstractDungeon.player.masterDeck.size() / 3);
@@ -71,7 +75,7 @@ public class TrinketHelperPatches implements CustomSavable<Float> {
     public static class TrinketHelperPatchesChangeMaxWeightPatchF {
         @SpirePostfixPatch
         public static void changeMaxWeightPatch(float change) {
-            System.out.println("TrinketHelperPatchesChangeMaxWeightPatch | Max Weight changed!");
+            logger.info("TrinketHelperPatchesChangeMaxWeightPatchF | Max Weight changed!");
             // changeModWeight(change);
             // NOTE: Do not change mod weight for float changes. The only float change is the 0.5 increment from adding cards
 
@@ -90,7 +94,7 @@ public class TrinketHelperPatches implements CustomSavable<Float> {
     )
     public static class OnRemoveCardFromMasterDeckPatch {
         public static void Postfix(CardGroup __instance, AbstractCard c) {
-            if (!Loader.isModLoaded("PansTrinkets")){
+            if (!Loader.isModLoaded(ModIDs.pansTrinkets)){
                 return;
             }
             if (__instance.type == CardGroup.CardGroupType.MASTER_DECK) {

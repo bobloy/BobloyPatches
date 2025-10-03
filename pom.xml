@@ -23,7 +23,7 @@
 
     <groupId>${modID}</groupId>
     <artifactId>${modID}</artifactId>
-    <version>0.0.5</version>
+    <version>0.0.6</version>
     <name>BobloyPatches</name>
     <description>TiS Multiplayer Compatability patches.</description>
     <!-- Change the above for mod information. -->
