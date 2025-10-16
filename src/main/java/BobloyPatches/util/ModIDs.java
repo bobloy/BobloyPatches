@@ -12,4 +12,5 @@ public class ModIDs {
     public static final String widePotions = "widepotions";
     public static final String downfall = "downfall";
     public static final String weightedPaths = "WeightedPaths";
+    public static final String actLikeIt = "actlikeit";
 }

@@ -117,7 +117,7 @@ public class OrnateMirrorPatches {
                 // Create and enqueue the ApplyPowerAction with the calculated damage
                 ReflectAttackPower newPower = new ReflectAttackPower((AbstractMonster)__instance.owner, ___fraction);
                 newPower.amount = damage;
-                AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(
+                AbstractDungeon.actionManager.addToTop(new ApplyPowerAction(
                         __instance.owner,
                         __instance.owner,
                         newPower
@@ -150,7 +150,7 @@ public class OrnateMirrorPatches {
                 // Create and enqueue the ApplyPowerAction with the calculated block
                 ReflectBlockPower newPower = new ReflectBlockPower((AbstractMonster)__instance.owner, ___fraction);
                 newPower.amount = block;
-                AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(
+                AbstractDungeon.actionManager.addToTop(new ApplyPowerAction(
                         __instance.owner,
                         __instance.owner,
                         newPower

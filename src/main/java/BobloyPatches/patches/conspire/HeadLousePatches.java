@@ -32,6 +32,11 @@ import spireTogether.util.NetworkMessage;
 import spireTogether.util.SpireHelp;
 
 import java.util.ArrayList;
+import com.megacrit.cardcrawl.helpers.ModHelper;
+import com.megacrit.cardcrawl.powers.MinionPower;
+import com.megacrit.cardcrawl.powers.SlowPower;
+import com.megacrit.cardcrawl.powers.StrengthPower;
+import com.megacrit.cardcrawl.relics.PhilosopherStone;
 
 import static spireTogether.patches.SpawnedMonsterManager.monsterSpawnCount;
 
@@ -157,7 +162,7 @@ public class HeadLousePatches {
                 __instance.amount = originalAmount;
 
                 // Create and enqueue the ApplyPowerAction with the calculated damage
-                AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(
+                AbstractDungeon.actionManager.addToTop(new ApplyPowerAction(
                         __instance.owner,
                         __instance.owner,
                         new SheddingPower((AbstractMonster)__instance.owner),
@@ -186,13 +191,35 @@ public class HeadLousePatches {
                             if(!roomMonsters.isEmpty() && roomMonsters.stream().anyMatch(rm -> rm instanceof HeadLouse)){
                                 for(AbstractMonster roomMonster : roomMonsters){
                                     String monsterId = MonsterFieldPatches.MonsterFieldPatcher.uniqueID.get(roomMonster);
-                                    if(monsterId.equals(m.uniqueID)){
+                                    if(monsterId != null && m.uniqueID != null && monsterId.equals(m.uniqueID)){
                                         return;
                                     }
                                 }
 
                                 AbstractMonster monster = m.ToStandard();
-                                if(monster != null) AbstractDungeon.getCurrRoom().monsters.monsters.add(monster);
+                                if(monster != null){
+                                    // Mimic SpawnLouseAction first-frame behavior on remote side
+                                    float sourceX = ((float)com.megacrit.cardcrawl.core.Settings.WIDTH * 0.75f + 200.f * com.megacrit.cardcrawl.core.Settings.scale) - monster.drawX;
+                                    monster.animX = sourceX;
+                                    monster.init();
+                                    monster.applyPowers();
+                                    AbstractDungeon.getCurrRoom().monsters.monsters.add(monster);
+                                    // Daily mods and Minion flag
+                                    if (ModHelper.isModEnabled(com.megacrit.cardcrawl.daily.mods.Lethality.ID)) {
+                                        AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(monster, monster, new StrengthPower(monster, 3), 3));
+                                    }
+                                    if (ModHelper.isModEnabled(com.megacrit.cardcrawl.daily.mods.TimeDilation.ID)) {
+                                        AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(monster, monster, new SlowPower(monster, 0)));
+                                    }
+                                    AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(monster, monster, new MinionPower(monster)));
+                                    // Philosopher's Stone passive
+                                    if (AbstractDungeon.player != null && AbstractDungeon.player.hasRelic(PhilosopherStone.ID)) {
+                                        monster.addPower(new StrengthPower(monster, 2));
+                                    }
+                                    // Finish like SpawnLouseAction end-frame
+                                    monster.animX = 0.0f;
+                                    monster.showHealthBar();
+                                }
                             }
                         }
                     }

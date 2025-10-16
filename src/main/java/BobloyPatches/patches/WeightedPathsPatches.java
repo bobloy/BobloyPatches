@@ -2,34 +2,122 @@ package BobloyPatches.patches;
 
 import BobloyPatches.util.DownfallMapPath;
 import BobloyPatches.util.ModIDs;
+import basemod.ReflectionHacks;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.derekjass.sts.weightedpaths.WeightedPaths;
+import com.derekjass.sts.weightedpaths.patches.WeightRenderPatches;
 import com.derekjass.sts.weightedpaths.paths.MapPath;
 import com.evacipated.cardcrawl.modthespire.Loader;
-import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
-import com.evacipated.cardcrawl.modthespire.lib.SpirePatch2;
-import com.evacipated.cardcrawl.modthespire.lib.SpirePrefixPatch;
-import com.evacipated.cardcrawl.modthespire.lib.SpireReturn;
+import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
+import com.megacrit.cardcrawl.core.Settings;
+import com.megacrit.cardcrawl.map.Legend;
 import com.megacrit.cardcrawl.map.MapEdge;
 import com.megacrit.cardcrawl.map.MapRoomNode;
+import com.megacrit.cardcrawl.screens.DungeonMapScreen;
 import downfall.patches.EvilModeCharacterSelect;
+import javassist.CannotCompileException;
+import javassist.expr.ExprEditor;
+import javassist.expr.FieldAccess;
+import mintySpire.patches.map.MiniMapDisplay;
+import com.megacrit.cardcrawl.map.MapRoomNode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
-// Patch the external mod class: com.derekjass.sts.weightedpaths.paths.MapPath.addRoomToPath(MapEdge)
 public class WeightedPathsPatches {
     private static final Logger logger = LogManager.getLogger(WeightedPathsPatches.class.getName());
 
-    @SpirePatch2(clz = WeightedPaths.class, method = "regeneratePaths", requiredModId = ModIDs.weightedPaths)
-    public static class RegeneratePathsDownfallPatch {
+//    @SpirePatch2(clz = WeightedPaths.class, method = "regeneratePaths", requiredModId = ModIDs.weightedPaths)
+//    public static class RegeneratePathsDownfallPatch {
+//        @SpirePrefixPatch
+//        public static SpireReturn<Void> prefix(List<MapPath> ___paths) {
+//            if (Loader.isModLoaded(ModIDs.downfall) && EvilModeCharacterSelect.evilMode) {
+//                ___paths = DownfallMapPath.generateDownAll();
+//                return SpireReturn.Return();
+//            }
+//            return SpireReturn.Continue();
+//        }
+//    }
+
+    @SpirePatch(
+            clz = Legend.class,
+            method = "render"
+    )
+    public static class End {
+        public static SpireReturn<Void> Prefix(Legend __instance, SpriteBatch sb) {
+            if (MiniMapDisplay.renderingMiniMap) {
+                return SpireReturn.Return(null);
+            }
+            return SpireReturn.Continue();
+        }
+    }
+
+    // Old Method
+//    @SpirePatch(
+//            optional = true,
+//            clz = WeightRenderPatches.PostMapRoomNodeRenderPatch.class,
+//            method = "onMapRoomNodeRender"
+//    )
+//    public static class FixWeightedPathsScrolling {
+//        static float saveOffsetY;
+//
+//        @SpirePrefixPatch
+//        public static void adjustWeightPosition(MapRoomNode room, SpriteBatch sb) {
+//            if (MiniMapDisplay.renderingMiniMap) {
+//                // Adjust the hitbox Y position to account for the minimap's different offsetY
+//                saveOffsetY = ReflectionHacks.getPrivateStatic(MiniMapDisplay.class, "saveOffsetY");
+//                room.hb.cY = room.hb.cY - saveOffsetY + DungeonMapScreen.offsetY;
+//            }
+//        }
+//
+//        @SpirePostfixPatch
+//        public static void restoreWeightPosition(MapRoomNode room, SpriteBatch sb) {
+//            if (MiniMapDisplay.renderingMiniMap) {
+//                // Restore the original hitbox Y position
+//                room.hb.cY = room.hb.cY + saveOffsetY - DungeonMapScreen.offsetY;
+//            }
+//        }
+//    }
+
+    @SpirePatch(
+            optional = true,
+            cls = "com.derekjass.sts.weightedpaths.patches.WeightRenderPatches",
+            method = "drawNodeValue"
+    )
+    public static class FixWeightedPathsScrolling {
+        public static ExprEditor Instrument() {
+            return new ExprEditor() {
+                @Override
+                public void edit(FieldAccess f) throws CannotCompileException {
+                    // Intercept reads of room.hb.cY
+                    if (f.isReader() && f.getFieldName().equals("cY")) {
+                        f.replace(String.format("$_ = %s.adjustYForMinimap($proceed($$));", 
+                            FixWeightedPathsScrolling.class.getName()));
+                    }
+                }
+            };
+        }
+
+        public static float adjustYForMinimap(float originalY) {
+            if (MiniMapDisplay.renderingMiniMap) {
+                float saveOffsetY = ReflectionHacks.getPrivateStatic(MiniMapDisplay.class, "saveOffsetY");
+                return originalY - saveOffsetY + DungeonMapScreen.offsetY;
+            }
+            return originalY;
+        }
+    }
+
+
+    @SpirePatch2(clz = MapPath.class, method = "generateAll", requiredModId = ModIDs.weightedPaths)
+    public static class GenerateAllDownfallPatch {
         @SpirePrefixPatch
-        public static SpireReturn<Void> prefix(List<MapPath> ___paths) {
+        public static SpireReturn<List<MapPath>> prefix() {
             if (Loader.isModLoaded(ModIDs.downfall) && EvilModeCharacterSelect.evilMode) {
-                ___paths = DownfallMapPath.generateDownAll();
-                return SpireReturn.Return();
+                List<MapPath> paths = DownfallMapPath.generateDownAll();
+                return SpireReturn.Return(paths);
             }
             return SpireReturn.Continue();
         }
@@ -89,7 +177,9 @@ public class WeightedPathsPatches {
         private static boolean isAlternateMapActive() {
             // Downfall mod id commonly used is "downfall". Fallbacks can be added if needed.
             if (Loader.isModLoaded(ModIDs.downfall)) return true;
-            return Loader.isModLoaded("ActLikeIt");
+            if (Loader.isModLoaded(ModIDs.actLikeIt)) return true;
+
+            return false;
             // Add more alternate map mod ids here if necessary
         }
 
